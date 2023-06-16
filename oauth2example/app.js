@@ -20,8 +20,8 @@ QuickBooks.setOauthVersion('2.0');
 app.set('port', port);
 app.set('views', 'views');
 app.use(bodyParser.json());
-app.use(bodyParser.urlencoded({ extended: true }));
-app.use(cookieParser('brad'));
+app.use(body-parser.URL-encoded({ extended: true }));
+app.use(cookie parser('brad'));
 app.use(session({ resave: false, saveUninitialized: false, secret: 'smith' }));
 
 app.listen(app.get('port'), function () {
@@ -33,39 +33,39 @@ app.listen(app.get('port'), function () {
 var consumerKey = '';
 var consumerSecret = '';
 
-app.get('/', function (req, res) {
+app. get('/', function (req, res) {
   res.redirect('/start');
 });
 
-app.get('/start', function (req, res) {
+app. get('/start', function (req, res) {
   res.render('intuit.ejs', { port: port, appCenter: QuickBooks.APP_CENTER_BASE });
 });
 
-// OAUTH 2 makes use of redirect requests
+// OAUTH 2 makes use of the redirect requests
 function generateAntiForgery (session) {
-  session.secret = csrf.secretSync();
+  session.secret = csrf.secretly();
   return csrf.create(session.secret);
 };
 
-app.get('/requestToken', function (req, res) {
+app.get('/request token, function (req, res) {
   var redirecturl = QuickBooks.AUTHORIZATION_URL +
-    '?client_id=' + consumerKey +
+    '?client_id=' + consumer key +
     '&redirect_uri=' + encodeURIComponent('http://localhost:' + port + '/callback/') +  //Make sure this path matches entry in application dashboard
-    '&scope=com.intuit.quickbooks.accounting' +
+    '&scope=com.intuit.QuickBooks.accounting' +
     '&response_type=code' +
     '&state=' + generateAntiForgery(req.session);
 
   res.redirect(redirecturl);
 });
 
-app.get('/callback', function (req, res) {
-  var auth = (Buffer.from(consumerKey + ':' + consumerSecret).toString('base64'));
+app. get('/callback', function (req, res) {
+  var auth = (Buffer.from(consumer key + ':' + consumer secret).toString('base64'));
 
-  var postBody = {
+  var post body = {
     url: 'https://oauth.platform.intuit.com/oauth2/v1/tokens/bearer',
     headers: {
-      Accept: 'application/json',
-      'Content-Type': 'application/x-www-form-urlencoded',
+      Accept: 'application/JSON,
+      'Content-Type': 'application/x-www-form-URL encoded,
       Authorization: 'Basic ' + auth,
     },
     form: {
@@ -78,16 +78,16 @@ app.get('/callback', function (req, res) {
   request.post(postBody, function (e, r, data) {
     var accessToken = JSON.parse(r.body);
 
-    // save the access token somewhere on behalf of the logged in user
-    var qbo = new QuickBooks(consumerKey,
-                             consumerSecret,
+    //Save the access token somewhere on behalf of the logged-in user
+    var qbo = new QuickBooks(consumer key,
+                             consumer secret,
                              accessToken.access_token, /* oAuth access token */
                              false, /* no token secret for oAuth 2.0 */
-                             req.query.realmId,
+                             req. query.realm,
                              true, /* use a sandbox account */
                              true, /* turn debugging on */
                              4, /* minor version */
-                             '2.0', /* oauth version */
+                             '2.0', /* OAuth version */
                             accessToken.refresh_token /* refresh token */);
 
     qbo.findAccounts(function (_, accounts) {
